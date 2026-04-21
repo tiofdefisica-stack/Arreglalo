@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arréglalo Ya — Soluciones para todo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --card: #1e1e1e;
+    --accent: #f5c518;
+    --accent2: #ff6b35;
+    --text: #f0f0f0;
+    --muted: #888;
+    --border: #2a2a2a;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 2rem;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(13,13,13,0.92);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+
+  .logo span { color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 5rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(245,197,24,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1.05;
+    max-width: 700px;
+    margin: 0 auto 1rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 480px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+  }
+
+  /* ── SEARCH BOX ── */
+  .search-wrap {
+    max-width: 620px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    padding: 1.1rem 1.5rem 1.1rem 3.2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: 50px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-wrap input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(245,197,24,0.12);
+  }
+
+  .search-wrap input::placeholder { color: var(--muted); }
+
+  .search-icon {
+    position: absolute;
+    left: 1.1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  .btn-search {
+    position: absolute;
+    right: 6px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 50px;
+    padding: 0.6rem 1.4rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+  }
+
+  .btn-search:hover { background: #ffd84a; transform: translateY(-50%) scale(1.03); }
+  .btn-search:disabled { opacity: 0.6; cursor: not-allowed; transform: translateY(-50%); }
+
+  /* ── CHIPS populares ── */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    max-width: 620px;
+    margin: 1.2rem auto 0;
+  }
+
+  .chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.35rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── RESULTADO ── */
+  .result-section {
+    max-width: 760px;
+    margin: 2.5rem auto 4rem;
+    padding: 0 1.5rem;
+  }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 2.2rem;
+    animation: slideIn 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .result-icon {
+    font-size: 2.2rem;
+    flex-shrink: 0;
+  }
+
+  .result-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.4rem;
+    line-height: 1.2;
+  }
+
+  .result-subtitle {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-top: 0.2rem;
+  }
+
+  /* Markdown → HTML styling */
+  .result-body h2 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 1.4rem 0 0.6rem;
+    color: var(--accent);
+  }
+
+  .result-body h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin: 1rem 0 0.4rem;
+    color: var(--accent2);
+  }
+
+  .result-body p {
+    color: #ccc;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin-bottom: 0.7rem;
+  }
+
+  .result-body ul, .result-body ol {
+    padding-left: 1.4rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .result-body li {
+    color: #ccc;
+    font-size: 0.93rem;
+    line-height: 1.6;
+    margin-bottom: 0.3rem;
+  }
+
+  .result-body strong { color: var(--text); }
+
+  .result-body hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.2rem 0;
+  }
+
+  .step-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.72rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+
+  /* Loading dots */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 2rem auto;
+    justify-content: center;
+  }
+
+  .dots span {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%,80%,100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+  }
+
+  /* ── CATEGORÍAS ── */
+  .categories {
+    max-width: 920px;
+    margin: 1rem auto 5rem;
+    padding: 0 1.5rem;
+  }
+
+  .cat-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.2rem;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .cat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.2rem 1.4rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .cat-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+  }
+
+  .cat-card .emoji { font-size: 1.5rem; }
+
+  .cat-info strong {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.1rem;
+  }
+
+  .cat-info span {
+    font-size: 0.76rem;
+    color: var(--muted);
+  }
+
+  /* share btn */
+  .share-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .share-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .share-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .star-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 1.2rem; padding: 0 1px;
+    transition: transform 0.1s;
+  }
+  .star-btn:hover { transform: scale(1.3); }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media(max-width: 600px) {
+    .hero h1 { font-size: 2rem; }
+    header { padding: 1rem; }
+    .result-card { padding: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Arréglalo<span>Ya</span></div>
+  <div style="font-size:0.8rem; color:var(--muted)">Soluciones al instante con IA</div>
+</header>
+
+<section class="hero">
+  <h1>Dinos tu problema,<br>te damos la <em>solución</em></h1>
+  <p>WiFi lento, lavadora que no centrifuga, móvil sin batería… lo que sea. La IA lo analiza y te guía paso a paso.</p>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Ej: wifi lento, factura luz muy alta, grifo gotea…" />
+    <button class="btn-search" id="searchBtn" onclick="buscarSolucion()">Resolver</button>
+  </div>
+
+  <div class="chips">
+    <div class="chip" onclick="setQuery('wifi lento')">📶 WiFi lento</div>
+    <div class="chip" onclick="setQuery('móvil se calienta')">🔥 Móvil se calienta</div>
+    <div class="chip" onclick="setQuery('factura de la luz muy alta')">⚡ Factura luz alta</div>
+    <div class="chip" onclick="setQuery('grifo que gotea')">💧 Grifo gotea</div>
+    <div class="chip" onclick="setQuery('coche no arranca')">🚗 Coche no arranca</div>
+    <div class="chip" onclick="setQuery('ordenador muy lento')">💻 PC lento</div>
+    <div class="chip" onclick="setQuery('lavadora no centrifuga')">🫧 Lavadora falla</div>
+    <div class="chip" onclick="setQuery('insomnio no puedo dormir')">😴 Insomnio</div>
+  </div>
+</section>
+
+<div id="resultSection" class="result-section" style="display:none"></div>
+
+<section class="categories">
+  <p class="cat-title">Categorías populares</p>
+  <div class="cat-grid">
+    <div class="cat-card" onclick="setQuery('internet lento en casa')">
+      <span class="emoji">📡</span>
+      <div class="cat-info"><strong>Tecnología</strong><span>WiFi, móvil, PC…</span></div>
+    </div>
+    <div class="cat-card" onclick="setQuery('humedad en la pared')">
+      <span class="emoji">🏠</span>
+      <div class="cat-info"><strong>Hogar</strong><span>Fontanería, grietas…</span></div>
+    </div>
+    <div class="cat-card" onclick="setQuery('ahorrar en la factura del gas')">
+      <span class="emoji">💶</span>
+      <div class="cat-info"><strong>Finanzas</strong><span>Ahorro, facturas…</span></div>
+    </div>
+    <div class="cat-card" onclick="setQuery('dolor de espalda al trabajar')">
+      <span class="emoji">🩺</span>
+      <div class="cat-info"><strong>Salud</strong><span>Dolores, hábitos…</span></div>
+    </div>
+    <div class="cat-card" onclick="setQuery('batería del coche descargada')">
+      <span class="emoji">🚗</span>
+      <div class="cat-info"><strong>Vehículo</strong><span>Averías, mantenimiento…</span></div>
+    </div>
+    <div class="cat-card" onclick="setQuery('perro que ladra mucho')">
+      <span class="emoji">🐾</span>
+      <div class="cat-info"><strong>Mascotas</strong><span>Comportamiento, salud…</span></div>
+    </div>
+    <div class="cat-card" onclick="setQuery('niño que no quiere comer')">
+      <span class="emoji">👶</span>
+      <div class="cat-info"><strong>Familia</strong><span>Niños, convivencia…</span></div>
+    </div>
+    <div class="cat-card" onclick="setQuery('planta se está muriendo')">
+      <span class="emoji">🌱</span>
+      <div class="cat-info"><strong>Jardín</strong><span>Plantas, plagas…</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2025 ArréglaloYa · Hecho con IA · Las soluciones son orientativas, siempre consulta a un profesional si es necesario.
+</footer>
+
+<script>
+  const GEMINI_KEY = 'AIzaSyD1hsiwsFy2Gwa4YEugfqSmgFYATs3neLM';
+
+  const SYSTEM_PROMPT = `Eres un experto en solucionar problemas cotidianos del hogar, tecnología, salud, finanzas y vida diaria. 
+Cuando el usuario te describa un problema, responde SIEMPRE en este formato exacto (en español):
+
+🔍 **Diagnóstico rápido**: [2 líneas explicando qué suele causar ese problema]
+
+---
+
+## Soluciones paso a paso
+
+### ✅ Solución 1 — [nombre corto]
+[Explicación clara, 2-4 frases. Usa lenguaje simple.]
+
+### ✅ Solución 2 — [nombre corto]
+[Explicación.]
+
+### ✅ Solución 3 — [nombre corto]
+[Explicación.]
+
+---
+
+## ⚠️ Cuándo llamar a un profesional
+[Una frase diciendo cuándo el problema supera el bricolaje o la autoayuda.]
+
+## 💡 Consejo extra
+[Un tip práctico que el usuario quizás no conoce.]
+
+Sé concreto, práctico y amigable. Máximo 350 palabras.`;
+
+  function setQuery(text) {
+    document.getElementById('searchInput').value = text;
+    document.getElementById('searchInput').focus();
+  }
+
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') buscarSolucion();
+  });
+
+  function markdownToHTML(md) {
+    return md
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^---$/gm, '<hr>')
+      .replace(/^- (.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/^(?!<[hul]|<hr)(.+)$/gm, '<p>$1</p>')
+      .replace(/<p><\/p>/g, '');
+  }
+
+  function getEmoji(query) {
+    const map = [
+      [/wifi|internet|router|red/i,'📡'],
+      [/móvil|teléfono|android|iphone|batería/i,'📱'],
+      [/ordenador|pc|computadora|portátil|lento/i,'💻'],
+      [/grifo|fontanería|agua|tubería|gotea/i,'🔧'],
+      [/luz|electricidad|factura|gas|calefacción/i,'⚡'],
+      [/coche|carro|automóvil|vehículo/i,'🚗'],
+      [/dolor|espalda|cabeza|salud|médico/i,'🩺'],
+      [/lavadora|lavavajillas|electrodoméstico/i,'🫧'],
+      [/planta|jardín|hierba|flor/i,'🌱'],
+      [/perro|gato|mascota|animal/i,'🐾'],
+      [/niño|hijo|bebé|familia/i,'👶'],
+      [/dinero|deuda|ahorro|finanzas/i,'💶'],
+    ];
+    for(const [re,em] of map) if(re.test(query)) return em;
+    return '🔍';
+  }
+
+  async function buscarSolucion() {
+    const query = document.getElementById('searchInput').value.trim();
+    if(!query) return;
+
+    const btn = document.getElementById('searchBtn');
+    btn.disabled = true;
+    btn.textContent = '…';
+
+    const section = document.getElementById('resultSection');
+    section.style.display = 'block';
+    section.innerHTML = `
+      <div class="loading">
+        <div class="dots"><span></span><span></span><span></span></div>
+        Analizando tu problema…
+      </div>`;
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    try {
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ parts: [{ text: `Mi problema: ${query}` }] }]
+        })
+      });
+
+      const data = await resp.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No se pudo obtener respuesta.';
+      const emoji = getEmoji(query);
+
+      section.innerHTML = `
+        <div class="result-card">
+          <div class="result-header">
+            <span class="result-icon">${emoji}</span>
+            <div>
+              <div class="result-title">${query.charAt(0).toUpperCase() + query.slice(1)}</div>
+              <div class="result-subtitle">Solución generada con IA • Orientativa</div>
+            </div>
+          </div>
+          <div class="result-body">${markdownToHTML(text)}</div>
+
+          <div class="rating-row">
+            <span>¿Te ha sido útil?</span>
+            <button class="star-btn" onclick="rate(this,1)">⭐</button>
+            <button class="star-btn" onclick="rate(this,2)">⭐</button>
+            <button class="star-btn" onclick="rate(this,3)">⭐</button>
+            <button class="star-btn" onclick="rate(this,4)">⭐</button>
+            <button class="star-btn" onclick="rate(this,5)">⭐</button>
+          </div>
+
+          <div class="share-row">
+            <button class="share-btn" onclick="copyLink()">🔗 Copiar enlace</button>
+            <button class="share-btn" onclick="shareWA()">💬 Compartir por WhatsApp</button>
+            <button class="share-btn" onclick="buscarSolucion()">🔄 Regenerar</button>
+          </div>
+        </div>`;
+
+    } catch(e) {
+      section.innerHTML = `<div class="result-card" style="border-color:#ff4444"><p style="color:#ff7777">Error al conectar con la IA. Comprueba tu conexión.</p></div>`;
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Resolver';
+  }
+
+  function rate(btn, n) {
+    const stars = btn.parentElement.querySelectorAll('.star-btn');
+    stars.forEach((s,i) => s.textContent = i < n ? '⭐' : '☆');
+  }
+
+  function copyLink() {
+    const q = encodeURIComponent(document.getElementById('searchInput').value);
+    navigator.clipboard.writeText(`${location.href}?q=${q}`);
+    alert('¡Enlace copiado!');
+  }
+
+  function shareWA() {
+    const q = document.getElementById('searchInput').value;
+    window.open(`https://wa.me/?text=Mira cómo solucionar "${q}": ${location.href}`);
+  }
+
+  // Auto-search if URL has ?q=
+  const urlQ = new URLSearchParams(location.search).get('q');
+  if(urlQ) {
+    document.getElementById('searchInput').value = urlQ;
+    setTimeout(buscarSolucion, 500);
+  }
+</script>
+</body>
+</html>
